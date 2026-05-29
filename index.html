@@ -1,0 +1,1981 @@
+<html lang="en"><head>
+<!-- This application is created solely for demo and educational purposes. It does not represent or operate as an official financial institution or live production website. -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Micro Finance</title>
+  <style>
+    :root{
+      --bg:#071019;
+      --bg2:#0b1622;
+      --card:#0f1c2a;
+      --card2:#101f30;
+      --line:#21364b;
+      --line2:#2b4561;
+      --text:#eaf3fb;
+      --muted:#8fa6bc;
+      --accent:#2dd4bf;
+      --accent2:#60a5fa;
+      --danger:#ff6b6b;
+      --success:#34d399;
+      --warning:#fbbf24;
+      --shadow:0 14px 36px rgba(0,0,0,.34);
+      --radius:18px;
+      --sidebar-w:280px;
+      --topbar-h:66px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Times New Roman", Times, serif;
+      background:radial-gradient(circle at top left,#11243a 0%,var(--bg) 36%,#04070b 100%);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+    button,input,select,textarea{font-family:inherit}
+    a{text-decoration:none;color:inherit}
+    .hidden{display:none !important}
+    .muted{color:var(--muted)}
+    .mini{font-size:12px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 12px;border-radius:999px;
+      border:1px solid #35556f;background:#0c1722;color:#dce9f4;
+      font-size:12px
+    }
+    .badge{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:5px 10px;border-radius:999px;font-size:12px;border:1px solid #35556f;
+      white-space:nowrap
+    }
+    .badge.paid{background:rgba(52,211,153,.12);color:#88e4b8;border-color:rgba(52,211,153,.35)}
+    .badge.unpaid{background:rgba(251,191,36,.10);color:#f5d77a;border-color:rgba(251,191,36,.35)}
+    .badge.info{background:rgba(96,165,250,.12);color:#a8d0ff;border-color:rgba(96,165,250,.35)}
+    .app{min-height:100vh}
+    .login-wrap{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px
+    }
+    .login-card{
+      width:min(390px,100%);
+      background:linear-gradient(180deg, rgba(18,34,51,.98), rgba(9,18,28,.98));
+      border:1px solid var(--line);
+      border-radius:24px;box-shadow:var(--shadow);padding:22px;overflow:hidden
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .logo{
+      width:48px;height:48px;border-radius:15px;
+      background:linear-gradient(135deg,var(--accent2),var(--accent));
+      display:grid;place-items:center;font-size:22px;font-weight:700;color:#071019;
+      box-shadow:0 12px 22px rgba(45,212,191,.18)
+    }
+    .brand h1{margin:0;font-size:25px;line-height:1.05}
+    .brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
+    .login-note{margin:14px 0 16px;color:var(--muted);font-size:13px;line-height:1.45}
+    .field{margin-bottom:12px}
+    .field label{display:block;font-size:13px;color:#cfe0ef;margin:0 0 7px}
+    .input,select,textarea{
+      width:100%;background:#08131d;border:1px solid #253a51;color:var(--text);
+      border-radius:12px;padding:12px 13px;font-size:15px;outline:none;transition:.2s
+    }
+    .input:focus,select:focus,textarea:focus{
+      border-color:var(--accent2);box-shadow:0 0 0 3px rgba(96,165,250,.14)
+    }
+    textarea{resize:vertical}
+    .btn{
+      appearance:none;border:none;cursor:pointer;border-radius:12px;padding:11px 14px;
+      font-size:14px;transition:.18s;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      text-decoration:none;white-space:nowrap
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#041018;font-weight:700}
+    .btn-secondary{background:#15283a;color:var(--text);border:1px solid #2a4058}
+    .btn-danger{background:#31161a;color:#ffdede;border:1px solid #64313d}
+    .btn-ghost{background:transparent;color:var(--text);border:1px solid #2a4058}
+    .btn-small{padding:8px 11px;border-radius:11px;font-size:12px}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+    .popup .btn-row{flex-direction:column;align-items:stretch}
+    .popup .btn-row .btn{width:100%}
+    .receipt-date-input{min-width:140px}
+    .status-chip{display:inline-flex;align-items:center;justify-content:center;padding:5px 10px;border-radius:999px;border:1px solid #35556f;background:#0c1722;color:#dce9f4;font-size:12px}
+    .topbar{
+      position:fixed;top:0;right:0;left:var(--sidebar-w);height:var(--topbar-h);z-index:20;
+      background:rgba(6,12,19,.76);backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(32,53,76,.8);
+      display:flex;align-items:center;justify-content:space-between;padding:0 14px
+    }
+    .top-left{display:flex;align-items:center;gap:12px;min-width:0}
+    .menu-btn,.icon-btn{
+      width:40px;height:40px;border-radius:11px;border:1px solid #294055;background:#0c1824;
+      color:var(--text);display:grid;place-items:center;cursor:pointer;flex:0 0 auto
+    }
+    .titleblock{min-width:0}
+    .titleblock h2{margin:0;font-size:18px;line-height:1.1}
+    .titleblock span{font-size:12px;color:var(--muted)}
+    .sidebar{
+      position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);z-index:40;
+      background:linear-gradient(180deg, rgba(15,28,42,.99), rgba(8,15,24,.99));
+      border-right:1px solid var(--line);box-shadow:var(--shadow);
+      display:flex;flex-direction:column
+    }
+    .side-head{
+      padding:14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px
+    }
+    .side-head .brand .logo{width:42px;height:42px;border-radius:13px;font-size:19px}
+    .side-head h3{margin:0;font-size:17px}
+    .nav{padding:10px;overflow:auto}
+    .nav .group-title{
+      padding:10px 12px 8px;color:#9cb3c8;font-size:12px;text-transform:uppercase;letter-spacing:.08em
+    }
+    .nav button{
+      width:100%;text-align:left;background:transparent;color:var(--text);border:1px solid transparent;
+      padding:13px 13px;border-radius:13px;margin-bottom:8px;cursor:pointer;font-size:14px;
+      display:flex;align-items:center;justify-content:flex-start;gap:10px
+    }
+    .nav button span:first-child{width:22px;display:inline-flex;justify-content:center;flex:0 0 22px}
+    .nav button.active,.nav button:hover{background:#102131;border-color:#274158}
+    .sidebar-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:35;display:none
+    }
+    .mobile-only{display:none}
+    .main{
+      margin-left:var(--sidebar-w);padding:86px 14px 30px;max-width:calc(100vw - var(--sidebar-w))
+    }
+    .grid{display:grid;gap:12px}
+    .cards{grid-template-columns:repeat(5,minmax(0,1fr))}
+    .three-col{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .two-col{display:grid;grid-template-columns:1.2fr .95fr;gap:12px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .full{grid-column:1/-1}
+    .card{
+      background:linear-gradient(180deg, rgba(18,34,51,.98), rgba(10,19,30,.98));
+      border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px
+    }
+    .stat{display:flex;flex-direction:column;gap:8px;min-height:96px}
+    .stat span{color:var(--muted);font-size:12px}
+    .stat strong{font-size:22px;line-height:1}
+    .stat .sub{font-size:12px;color:#cddcea}
+    .section{display:none}
+    .section.active{display:block}
+    .section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:6px 0 12px}
+    .section-head h3{margin:0;font-size:19px}
+    .section-head p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+    .space-between{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .flex{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,#294055,transparent);margin:12px 0}
+    .table-wrap{overflow:auto;border-radius:14px;border:1px solid var(--line);-webkit-overflow-scrolling:touch}
+    table{width:100%;border-collapse:collapse;background:#091421;min-width:840px}
+    th,td{border-bottom:1px solid #1f3448;padding:10px 9px;text-align:left;font-size:14px;vertical-align:top}
+    th{background:#102131;color:#d6e6f5;position:sticky;top:0;z-index:1;padding-top:14px;padding-bottom:14px}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .search{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .search input{min-width:240px}
+    .code-banner{
+      border:1px solid rgba(45,212,191,.35);background:rgba(45,212,191,.08);color:#dffdf8;
+      border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:13px
+    }
+    .form-section-title{
+      padding:9px 11px;border-radius:12px;background:#102131;border:1px solid #274158;
+      color:#d6e6f5;font-size:13px;font-weight:700;margin-bottom:10px
+    }
+    .statement-header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .statement-card{padding:12px}
+    .report-summary{margin-top:12px;color:#dbe9f6;font-size:14px;line-height:1.6}
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0e1c2b;border:1px solid #2b455d;
+      color:#eaf3fb;padding:12px 14px;border-radius:14px;box-shadow:var(--shadow);z-index:100;
+      display:none;max-width:min(560px,92vw)
+    }
+    .toast.show{display:block}
+    .popup-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;
+      z-index:120;padding:18px
+    }
+    .popup-backdrop.show{display:flex}
+    .popup{
+      width:min(390px,100%);background:linear-gradient(180deg, rgba(18,34,51,.98), rgba(10,19,30,.98));
+      border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:16px
+    }
+    .popup h4{margin:0 0 8px;font-size:17px}
+    .popup p{margin:0 0 10px;color:var(--muted);font-size:13px;line-height:1.45}
+    .error-text{min-height:16px;color:#ffb0b0;font-size:12px;margin-top:6px}
+    .footer-note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+    .cashbook-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .balance-box{
+      display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px
+    }
+    .balance-item{
+      background:#0b1722;border:1px solid #294055;border-radius:14px;padding:12px
+    }
+    .balance-item span{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}
+    .balance-item strong{font-size:20px}
+    .sign-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .sign-box{
+      height:86px;border:1px dashed #39536a;border-radius:14px;display:flex;align-items:end;justify-content:center;
+      padding:10px;color:#d4e5f6;font-size:12px;background:#0a1621;text-align:center
+    }
+    .passport-box{
+      min-height:182px;border:1px solid #35556f;border-radius:16px;background:#08131d;
+      display:flex;align-items:center;justify-content:center;color:#7ea8cb;text-align:center;padding:12px
+    }
+    .qr-box{
+      min-height:120px;border:1px dashed #3a5873;border-radius:16px;background:#08131d;
+      display:flex;align-items:center;justify-content:center;color:#86aecf;text-align:center;padding:12px
+    }
+    .section-shell{padding:4px 0}
+    .small-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+    .section-title{font-size:16px;font-weight:700;margin:0}
+    .helper{font-size:12px;color:var(--muted)}
+    .compact{font-size:13px;line-height:1.5}
+    
+    .alert-slider{
+      width:100%;
+      overflow:hidden;
+      white-space:nowrap;
+      color:#ffef9f;
+      font-weight:700;
+      font-size:15px;
+    }
+    .alert-slider span{
+      display:inline-block;
+      padding-left:100%;
+      animation:slideAlert 12s linear infinite;
+    }
+    @keyframes slideAlert{
+      0%{transform:translateX(0)}
+      100%{transform:translateX(-100%)}
+    }
+    .interest-card strong{
+      color:#34d399;
+    }
+
+    .print-only{display:none}
+    @media (max-width: 900px){
+      :root{--sidebar-w:0px;--topbar-h:64px}
+      .mobile-only{display:grid}
+      .sidebar{
+        transform:translateX(-105%);transition:.25s ease;width:min(300px,86vw)
+      }
+      .sidebar.open{transform:translateX(0)}
+      .sidebar-backdrop.show{display:block}
+      .topbar{left:0}
+      .main{margin-left:0;max-width:100vw;padding:82px 10px 24px}
+      .cards,.three-col,.two-col,.form-grid,.cashbook-grid,.balance-box,.sign-row{grid-template-columns:1fr}
+      .search input{min-width:0;width:100%}
+      .section-head{flex-direction:column}
+      .btn-row{width:100%}
+      .btn-row .btn{width:100%}
+      .statement-header{flex-direction:column}
+      .mobile-hide{display:none !important}
+      .print-only{display:block}
+    }
+    @media print{
+      body{background:#fff;color:#000}
+      .no-print,.topbar,.sidebar,.sidebar-backdrop,.toast,.popup-backdrop{display:none !important}
+      .main{margin:0;padding:0;max-width:none}
+      .card{box-shadow:none;border:1px solid #bbb;background:#fff;color:#000}
+      .section{display:none !important}
+      .section.active{display:block !important}
+      th{background:#efefef;color:#000;position:static}
+      table{background:#fff}
+      .badge{border-color:#999;color:#000;background:#fff}
+    }
+  </style>
+</head>
+<body>
+  <div id="loginPage" class="login-wrap">
+    <div class="login-card">
+      <div class="brand">
+        <div class="logo">₹</div>
+        <div>
+          <h1>Micro Finance</h1>
+                  </div>
+      </div>
+      <div class="login-note">Enter your credentials to continue.</div>
+      <div class="field"><label>User ID</label><input id="loginUser" class="input" type="text" autocomplete="username" placeholder="User ID"></div>
+      <div class="field"><label>Password</label><input id="loginPass" class="input" type="password" autocomplete="current-password" placeholder="Password"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="loginBtn">Login</button>
+      </div>
+      <div id="loginError" class="error-text"></div>
+      <div class="footer-note">.</div>
+    </div>
+  </div>
+
+  <div id="appPage" class="app hidden">
+    <div class="sidebar-backdrop show" id="sidebarBackdrop"></div>
+
+    <aside class="sidebar open" id="sidebar">
+      <div class="side-head">
+        <div class="brand" style="margin:0">
+          <div class="logo">₹</div>
+          <div>
+            <h3>Micro Finance</h3>
+            
+          </div>
+        </div>
+        <button class="icon-btn no-print mobile-only" id="closeSidebarBtn" title="Close">✕</button>
+      </div>
+      <div class="nav" id="navButtons">
+        <div class="group-title">Main</div>
+        <button data-target="dashboard" class=""><span>📊</span><span>Dashboard</span></button>
+        <button data-target="newLoan" class="active"><span>📝</span><span>New Loan</span></button>
+        <button data-target="borrowersList"><span>🔎</span><span>List of Borrower</span></button>
+        <button data-target="allBorrowers"><span>👥</span><span>List of All Borrower</span></button>
+        <div class="group-title">Accounts</div>
+        <button data-target="contribution"><span>💰</span><span>Members Contribution</span></button>
+        <button data-target="expenditure"><span>💸</span><span>Members Expenditure</span></button>
+        <button data-target="cashbook" class=""><span>📒</span><span>Cashbook Register</span></button>
+        <div class="group-title">System</div>
+        <button id="importJsonBtn"><span>⤓</span><span>Import JSON</span></button>
+        <button id="exportJsonBtn"><span>⤒</span><span>Export JSON</span></button>
+        <button id="downloadHtmlBtn"><span>⬇</span><span>Download Admin Backup</span></button>
+        <button id="logoutBtn"><span>⎋</span><span>Logout</span></button>
+      </div>
+    </aside>
+
+    <div class="topbar">
+      <div class="top-left">
+        <button class="menu-btn no-print mobile-only" id="openSidebarBtn">☰</button>
+        <div class="titleblock">
+          <h2>Micro Finance</h2>
+          <span id="clockText">Thursday, 28 May 2026 • 08:20 PM</span>
+        </div>
+      </div>
+      <div class="flex no-print">
+                <button class="btn btn-secondary btn-small" id="logoutTopBtn">Logout</button>
+      </div>
+    </div>
+
+    <main class="main">
+      <section id="dashboard" class="section">
+        <div class="section-head">
+          <div>
+            <h3>Dashboard</h3>
+          </div>
+          <div class="flex no-print">
+            <button class="btn btn-ghost btn-small" id="wipeAllBtn">Reset All Data</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px;overflow:hidden">
+          <div class="alert-slider">
+            <span>🚨 "Manu toh Khumabo hoile be poisa to nakhumabo"🚨 &nbsp;&nbsp;&nbsp; 🚨 Alert alert! Save backup 🚨</span>
+          </div>
+        </div>
+
+        <div class="grid cards">
+          <div class="card stat"><span>Total Borrowers</span><strong id="statBorrowers">1</strong></div>
+          <div class="card stat"><span>Total Principal Disbursed</span><strong id="statPrincipal">40,000</strong></div>
+          <div class="card stat interest-card">
+            <span>+ Total Interest Occurred Till Date</span>
+            <strong id="statInterestOccurred">1,200</strong>
+          </div>
+          <div class="card stat"><span>Estimated Total Recovery Amount</span><strong id="statProjected">52,300</strong><span class="sub"> </span></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="space-between">
+            <div>
+              <h3 style="margin:0">Closing Balance</h3>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:28px;font-weight:700" id="statClosing">7,500</div>
+        </div>
+      </section>
+
+      <section id="newLoan" class="section active">
+        <div class="section-head">
+          <div>
+            <h3>New Loan</h3>
+          </div>
+          <div class="flex no-print">
+            <button class="btn btn-secondary btn-small" id="downloadLoanBtnTop">Download Loan Form</button>
+          </div>
+        </div>
+
+        <div id="savedCodeBanner" class="code-banner hidden">Saved borrower code: <strong id="savedCodeText"></strong></div>
+
+        <div class="card">
+          <form id="loanForm">
+            <div class="section-shell">
+              <div class="small-head"><h4 class="section-title">Borrower Information</h4></div>
+              <div class="divider"></div>
+              <div class="form-grid">
+                <div class="field full"><label>Name of the Borrower</label><input class="input" id="borrowerName" required=""></div>
+                <div class="field"><label>Father's Name</label><input class="input" id="fatherName" required=""></div>
+                <div class="field"><label>Gender</label><select id="gender" required=""><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                <div class="field"><label>Occupation</label><input class="input" id="occupation" required=""></div>
+                <div class="field"><label>Contact No</label><input class="input" id="contact" inputmode="tel" required=""></div>
+                <div class="field full"><label>Address</label><textarea id="address" rows="2" required=""></textarea></div>
+              </div>
+            </div>
+
+            <div class="section-shell" style="margin-top:10px">
+              <div class="small-head"><h4 class="section-title">Loan Details</h4></div>
+              <div class="divider"></div>
+              <div class="form-grid">
+                <div class="field"><label>Amount</label><input class="input" id="amount" type="number" min="1" step="0.01" required=""></div>
+                <div class="field"><label>Interest Rate (per month %)</label><input class="input" id="rate" type="number" min="0" step="0.01" required=""></div>
+                <div class="field"><label>Recovery Periods (Months)</label><input class="input" id="months" type="number" min="1" step="1" required=""></div>
+                <div class="field"><label>Date of Borrowing</label><input class="input" id="loanDate" type="date" required=""></div>
+                <div class="field full"><label>Monthly EMI (Auto Calculated)</label><input class="input" id="emi" type="text" readonly=""></div>
+              </div>
+            </div>
+
+            <div class="section-shell" style="margin-top:10px">
+              <div class="small-head"><h4 class="section-title">Guarantor Details</h4></div>
+              <div class="divider"></div>
+              <div class="form-grid">
+                <div class="field"><label>Guarantor's Name</label><input class="input" id="gName" required=""></div>
+                <div class="field"><label>Guarantor's Occupation</label><input class="input" id="gOcc" required=""></div>
+                <div class="field"><label>Guarantor's Contact</label><input class="input" id="gContact" required=""></div>
+                <div class="field"><label>Guarantor's Address</label><input class="input" id="gAddress" required=""></div>
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top:12px">
+              <button type="submit" class="btn btn-primary" id="saveLoanBtn">Save</button>
+              <button type="button" class="btn btn-secondary" id="downloadLoanBtn">Download</button>
+              <button type="button" class="btn btn-danger" id="resetLoanBtn">Reset</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="borrowersList" class="section">
+        <div class="section-head">
+          <div>
+            <h3>List of Borrower</h3>
+          </div>
+          <div class="search no-print">
+            <input class="input" id="searchBorrower" placeholder="Search borrower by name, code, contact...">
+          </div>
+        </div>
+        <div class="card">
+          <div class="space-between"><strong>Borrowers</strong><span class="muted mini" id="borrowerCountText">1 record</span></div>
+          <div class="divider"></div>
+          <div id="borrowerListContainer"><div class="table-wrap"><table style="min-width:900px"><thead><tr><th>Sl. No</th><th>Name of Borrower</th><th>Code</th><th>Contact</th><th>Father's Name</th><th>Occupation</th><th>Date of Borrowing</th><th>Action</th></tr></thead><tbody><tr>
+          <td>1</td>
+          <td><button class="btn btn-ghost btn-small" style="padding:0;background:none;border:none;color:var(--text);text-decoration:underline;cursor:pointer" onclick="window.__openBorrowerStatement('MF-0001')">Lemba Chang</button></td>
+          <td>MF-0001</td>
+          <td>0</td>
+          <td>NA</td>
+          <td>NA</td>
+          <td>11 Feb 2026</td>
+          <td><button class="btn btn-secondary btn-small" onclick="window.__openBorrowerStatement('MF-0001')">Open</button></td>
+        </tr></tbody></table></div></div>
+        </div>
+      </section>
+
+      <section id="borrowerStatementPage" class="section">
+        <div class="section-head">
+          <div>
+            <h3>Borrower Statement</h3>
+          </div>
+          <div class="flex no-print">
+            <button class="btn btn-secondary btn-small" id="backToListBtn">Back to list</button>
+            <button class="btn btn-secondary btn-small" id="downloadStatementBtn">Download</button>
+          </div>
+        </div>
+        <div class="card" id="statementContainer"><div class="muted">Select a borrower to view statement.</div></div>
+      </section>
+
+      <section id="allBorrowers" class="section">
+        <div class="section-head">
+          <div>
+            <h3>List of All Borrower</h3>
+          </div>
+          <div class="flex no-print"><button class="btn btn-secondary btn-small" id="downloadAllBorrowersBtn">Download Summary</button></div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Sl. No</th><th>Name of Borrower</th><th>Code</th><th>Amount</th><th>Date of Borrowing</th><th>Interest Occurred</th><th>Action</th></tr>
+              </thead>
+              <tbody id="allBorrowersTable">
+        <tr>
+          <td>1</td>
+          <td>Lemba Chang</td>
+          <td>MF-0001</td>
+          <td>40,000</td>
+          <td>11 Feb 2026</td>
+          <td>1,200</td>
+          <td>
+            <div class="flex no-print">
+              <button class="btn btn-secondary btn-small" onclick="window.__openBorrowerStatement('MF-0001')">View</button>
+              <button class="btn btn-secondary btn-small" onclick="window.__editBorrower('MF-0001')">Edit</button>
+              <button class="btn btn-danger btn-small" onclick="window.__deleteBorrower('MF-0001')">Delete</button>
+            </div>
+          </td>
+        </tr></tbody>
+              <tfoot>
+                <tr><th colspan="3">Total</th><th id="totalPrincipalCell">40,000</th><th></th><th id="totalInterestCell">1,200</th><th></th></tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="contribution" class="section">
+        <div class="section-head">
+          <div>
+            <h3>Members Contribution</h3>
+                      </div>
+        </div>
+        <div class="card">
+          <form id="contribForm" class="form-grid">
+            <div class="field"><label>Date</label><input class="input" id="contribDate" type="date" required=""></div>
+            <div class="field"><label>Amount</label><input class="input" id="contribAmount" type="number" min="1" step="0.01" required=""></div>
+            <div class="field full"><label>Notes</label><textarea class="input" id="contribNotes" rows="2" placeholder="Notes"></textarea></div>
+            <div class="field full btn-row"><button class="btn btn-primary" type="submit">Save</button><button class="btn btn-danger" type="button" id="contribResetBtn">Reset</button></div>
+          </form>
+          <div class="divider"></div>
+          <div class="table-wrap">
+            <table style="min-width:760px">
+              <thead><tr><th>Date</th><th>Amount</th><th>Notes</th><th>Action</th></tr></thead>
+              <tbody id="contribTable">
+        <tr>
+          <td>28 May 2026</td>
+          <td>300</td>
+          <td></td>
+          <td><button class="btn btn-danger btn-small no-print" onclick="window.__deleteContribution('c84184ab-c2d4-4aa4-b52f-e307d6135d7c')">Delete</button></td>
+        </tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="expenditure" class="section">
+        <div class="section-head">
+          <div>
+            <h3>Members Expenditure</h3>
+                      </div>
+          <div class="flex no-print"><button class="btn btn-secondary btn-small" id="downloadExpenditureBtn">Download</button></div>
+        </div>
+        <div class="card">
+          <form id="expForm" class="form-grid">
+            <div class="field"><label>Date</label><input class="input" id="expDate" type="date" required=""></div>
+            <div class="field full"><label>Particulars</label><textarea id="expParticulars" rows="3" required=""></textarea></div>
+            <div class="field"><label>Amount</label><input class="input" id="expAmount" type="number" min="1" step="0.01" required=""></div>
+            <div class="field full btn-row"><button class="btn btn-primary" type="submit">Save</button><button class="btn btn-danger" type="button" id="expResetBtn">Reset</button></div>
+          </form>
+          <div class="divider"></div>
+          <div class="table-wrap">
+            <table style="min-width:760px">
+              <thead><tr><th>Date</th><th>Particulars</th><th>Amount</th><th>Action</th></tr></thead>
+              <tbody id="expTable"><tr><td colspan="4">No expenditure entries yet.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="cashbook" class="section">
+        <div class="section-head">
+          <div>
+            <h3>Cashbook Register</h3>
+          </div>
+          <div class="flex no-print"><button class="btn btn-secondary btn-small" id="downloadCashbookBtn">Download Cashbook</button></div>
+        </div>
+
+        <div class="card">
+          <div class="form-grid">
+            <div class="field"><label>Opening Balance Date</label><input class="input" id="openingBalanceDate" type="date"></div>
+            <div class="field"><label>Opening Balance</label><input class="input" id="openingBalance" type="number" step="0.01"></div>
+            <div class="field" style="display:flex;align-items:end"><button class="btn btn-primary" id="saveOpeningBalanceBtn" type="button">Save Opening Balance</button></div>
+          </div>
+
+          <div class="balance-box">
+            <div class="balance-item"><span>Total EMI Receipts</span><strong id="cashEmiTotal">5,200</strong></div>
+            <div class="balance-item"><span>Total Contribution Receipts</span><strong id="cashContribTotal">300</strong></div>
+            <div class="balance-item"><span>Total Payments</span><strong id="cashPaymentTotal">40,000</strong></div>
+            <div class="balance-item"><span>Closing Balance</span><strong id="cashClosingTotal">7,500</strong></div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="small-head">
+            <h4 class="section-title">Ledger</h4>
+          </div>
+          <div class="divider"></div>
+          <div class="table-wrap">
+            <table style="min-width:1000px">
+              <thead>
+                <tr>
+                  <th>Date</th><th>Particulars</th><th>Receipts</th><th>Payments</th><th>Balance</th>
+                </tr>
+              </thead>
+              <tbody id="cashbookTable"><tr><td>Wednesday, the 11th February 2026.</td><td><strong>Opening Balance</strong></td><td>0.00</td><td>0.00</td><td><strong>42,000</strong></td></tr><tr>
+          <td>Wednesday, the 11th February 2026.</td>
+          <td>New Loan Disbursed - Lemba Chang (MF-0001)</td>
+          <td></td>
+          <td>40,000</td>
+          <td>2,000</td>
+        </tr><tr>
+          <td>Thursday, the 12th March 2026.</td>
+          <td>EMI Receipt - Lemba Chang (MF-0001) - February 2026</td>
+          <td>5,200</td>
+          <td></td>
+          <td>7,200</td>
+        </tr><tr>
+          <td>Thursday, the 28th May 2026.</td>
+          <td>Members Contribution</td>
+          <td>300</td>
+          <td></td>
+          <td>7,500</td>
+        </tr><tr><td>Thursday, the 28th May 2026.</td><td><strong>Closing Balance</strong></td><td>0.00</td><td>0.00</td><td><strong>7,500</strong></td></tr></tbody>
+            </table>
+          </div>
+          <div class="report-summary" id="cashbookSummary">Current cashbook result: <strong>Positive</strong> balance of 7,500.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">Unauthorized</div>
+  <input id="importJsonFile" type="file" accept="application/json,.json" class="hidden">
+
+  <div class="popup-backdrop" id="authBackdrop">
+    <div class="popup" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <h4 id="authTitle">Authorization required</h4>
+      <p id="authMessage">Admin Access Only.</p>
+      <div class="field">
+        <label>Authorization Code</label>
+        <input class="input" id="authInput" type="password" placeholder="Enter code">
+        <div id="authError" class="error-text"></div>
+      </div>
+      <div class="btn-row" style="flex-direction:column;align-items:stretch">
+        <button class="btn btn-primary" id="authOkBtn" type="button">Continue</button>
+        <button class="btn btn-secondary" id="authCancelBtn" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script>
+    const STORAGE_KEY = 'micro_finance_state_v3';
+    const AUTH_CODE = '6655';
+    const LOGIN_USER = 'admin';
+    const LOGIN_PASS = '12345';
+    window.__INITIAL_MICRO_FINANCE_STATE = {"borrowers":[{"name":"Lemba Chang","fatherName":"NA","gender":"Male","occupation":"NA","contact":"0","address":"Tuensang","amount":40000,"rate":3,"months":10,"loanDate":"2026-02-11","gName":"NA","gOcc":"NA","gContact":"NA","gAddress":"NA","terms":"1. The borrower agrees to repay the loan with monthly installment on time.\n\n2. Delayed payment may attract penalty as decided by the finance office.\n\n3. The guarantor stands responsible until full repayment of the loan.\n\n4. All records are maintained digitally and can be printed whenever required.","installments":{"2026-05-27":{"paid":true,"receiptDate":"2026-03-12","receiptAt":"2026-03-12T12:00:00"},"2026-02-10":{"paid":true,"receiptDate":"2026-03-12","receiptAt":"2026-03-12T12:00:00"}},"createdAt":"2026-05-28T14:29:07.171Z","code":"MF-0001","loanClosed":false,"closedAt":""}],"contributions":[{"id":"c84184ab-c2d4-4aa4-b52f-e307d6135d7c","date":"2026-05-28","amount":300,"notes":"","createdAt":"2026-05-28T14:44:20.746Z"}],"expenditures":[],"openingBalance":42000,"openingBalanceDate":"2026-02-11"};
+    const DEFAULT_TERMS = [
+      '1. The borrower agrees to repay the loan within the mutually agreed tenure and interest rate.',
+      '2. The monthly EMI must be paid on or before the 15th of every month.',
+      '3. Late or delayed payments may result in additional penalties or charges.',
+      '4. Micro Finance reserves the right to initiate recovery proceedings in case of default.'
+    ].join('\n\n');
+
+    const state = {
+      borrowers: [],
+      contributions: [],
+      expenditures: [],
+      openingBalance: 0,
+      openingBalanceDate: ''
+    };
+
+    let currentUser = null;
+    let activeBorrowerCode = null;
+    let pendingEditCode = null;
+    let authResolver = null;
+    let authExpectedCode = AUTH_CODE;
+
+    const el = (id) => document.getElementById(id);
+    const roundMoney = (v) => {
+      const n = Number.parseFloat(v || 0);
+      if (!Number.isFinite(n)) return 0;
+      return Math.round(n);
+    };
+    const fmt = (n) => Number(roundMoney(n) || 0).toLocaleString('en-IN');
+    const num = (v) => roundMoney(v);
+    const todayISO = () => new Date().toISOString().slice(0, 10);
+    const uid = () => (crypto && crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+    const esc = (s) => String(s ?? '').replace(/[&<>\"]/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+    
+    function initializeLoginState() {
+      const loggedIn = sessionStorage.getItem('micro_finance_logged_in') === 'yes';
+      if (loggedIn) {
+        el('loginPage').classList.add('hidden');
+        el('appPage').classList.remove('hidden');
+      } else {
+        el('loginPage').classList.remove('hidden');
+        el('appPage').classList.add('hidden');
+      }
+    }
+
+
+    function toast(msg) {
+      const t = el('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function normalizeState(input) {
+      const src = input && typeof input === 'object' ? input : {};
+      const normalized = {
+        borrowers: Array.isArray(src.borrowers) ? src.borrowers : [],
+        contributions: Array.isArray(src.contributions) ? src.contributions : [],
+        expenditures: Array.isArray(src.expenditures) ? src.expenditures : [],
+        openingBalance: num(src.openingBalance || 0),
+        openingBalanceDate: src.openingBalanceDate || todayISO()
+      };
+
+      normalized.borrowers = normalized.borrowers.map(b => ({
+        ...b,
+        installments: b && typeof b.installments === 'object' && b.installments ? b.installments : {},
+        amount: num(b.amount),
+        rate: num(b.rate),
+        months: parseInt(b.months, 10) || 0
+      }));
+      normalized.contributions = normalized.contributions.map(c => ({
+        ...c,
+        amount: num(c.amount)
+      }));
+      normalized.expenditures = normalized.expenditures.map(x => ({
+        ...x,
+        amount: num(x.amount)
+      }));
+      return normalized;
+    }
+
+    function applyState(nextState) {
+      const normalized = normalizeState(nextState);
+      state.borrowers = normalized.borrowers;
+      state.contributions = normalized.contributions;
+      state.expenditures = normalized.expenditures;
+      state.openingBalance = normalized.openingBalance;
+      state.openingBalanceDate = normalized.openingBalanceDate;
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          try {
+            applyState(JSON.parse(raw));
+            return;
+          } catch (err) {
+            console.warn('Local storage parse failed, using embedded state if available', err);
+          }
+        }
+        if (window.__INITIAL_MICRO_FINANCE_STATE) {
+          applyState(window.__INITIAL_MICRO_FINANCE_STATE);
+        }
+      } catch (e) {
+        console.warn('State load failed', e);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function exportStatePayload() {
+      return {
+        app: 'Micro Finance',
+        version: 'v6',
+        exportedAt: new Date().toISOString(),
+        state: normalizeState(state)
+      };
+    }
+
+    function downloadTextFile(filename, content, mime = 'application/json;charset=utf-8') {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function exportJson() {
+      const payload = exportStatePayload();
+      downloadTextFile(`micro_finance_export_${todayISO()}.json`, JSON.stringify(payload, null, 2));
+      toast('JSON exported');
+    }
+
+    function importJsonFromObject(payload) {
+      const source = payload && typeof payload === 'object' && payload.state ? payload.state : payload;
+      applyState(source);
+      saveState();
+      pendingEditCode = null;
+      activeBorrowerCode = null;
+      window.__currentBorrower = null;
+      refreshAll();
+      showSection('dashboard');
+      toast('JSON imported and local data updated');
+    }
+
+    async function importJsonFile(file) {
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        importJsonFromObject(parsed);
+      } catch (err) {
+        console.error(err);
+        toast('Invalid JSON file');
+      } finally {
+        el('importJsonFile').value = '';
+      }
+    }
+
+    function downloadUpdatedHtml() {
+      // This function is called only after authorization.
+      const embeddedState = JSON.stringify(normalizeState(state))
+        .replace(/</g, '\\u003c')
+        .replace(/\\u2028/g, '\\u2028')
+        .replace(/\\u2029/g, '\\u2029');
+      const html = document.documentElement.outerHTML.replace(
+        "window.__INITIAL_MICRO_FINANCE_STATE = null;",
+        `window.__INITIAL_MICRO_FINANCE_STATE = ${embeddedState};`
+      );
+      downloadTextFile(`micro_finance_updated_${todayISO()}.html`, html, 'text/html;charset=utf-8');
+      toast('Updated HTML downloaded');
+    }
+
+    function openSidebar() {
+      el('sidebar').classList.add('open');
+      el('sidebarBackdrop').classList.add('show');
+    }
+    function closeSidebar() {
+      el('sidebar').classList.remove('open');
+      el('sidebarBackdrop').classList.remove('show');
+    }
+
+    function ordinal(n) {
+      const j = n % 10, k = n % 100;
+      if (j === 1 && k !== 11) return n + 'st';
+      if (j === 2 && k !== 12) return n + 'nd';
+      if (j === 3 && k !== 13) return n + 'rd';
+      return n + 'th';
+    }
+
+    function parseDateAtStart(d) {
+      if (!d) return null;
+      const s = String(d).slice(0, 10);
+      const dt = new Date(s + 'T00:00:00');
+      return Number.isFinite(dt.getTime()) ? dt : null;
+    }
+
+    function formatLongDate(d) {
+      const dt = parseDateAtStart(d);
+      if (!dt) return '';
+      const day = ordinal(dt.getDate());
+      const weekday = dt.toLocaleDateString('en-GB', { weekday: 'long' });
+      const month = dt.toLocaleDateString('en-GB', { month: 'long' });
+      const year = dt.getFullYear();
+      return `${weekday}, the ${day} ${month} ${year}.`;
+    }
+
+    function formatDateShort(d) {
+      const dt = parseDateAtStart(d);
+      return dt ? dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '';
+    }
+
+    function generateBorrowerCode(serial) {
+      return 'MF-' + String(serial).padStart(4, '0');
+    }
+
+    function calcEMI(amount, rate, months) {
+      if (!amount || !months) return 0;
+      const total = amount + (amount * (rate / 100) * months);
+      return total / months;
+    }
+
+    function getBorrowerByCode(code) {
+      return state.borrowers.find(b => b.code === code);
+    }
+
+    function scheduleForBorrower(b) {
+      const rows = [];
+      const start = new Date(b.loanDate + 'T00:00:00');
+      const emi = num(calcEMI(num(b.amount), num(b.rate), parseInt(b.months, 10)));
+      const monthlyInterest = num(num(b.amount) * (num(b.rate) / 100));
+      for (let i = 0; i < parseInt(b.months, 10); i++) {
+        const d = new Date(start);
+        d.setMonth(d.getMonth() + i);
+        const key = d.toISOString().slice(0, 10);
+        const st = (b.installments && b.installments[key]) || { paid:false, receiptDate:'' };
+        rows.push({
+          month: d.toLocaleDateString('en-US', { month:'long', year:'numeric' }),
+          date: key,
+          emi,
+          monthlyInterest,
+          paid: !!st.paid,
+          receiptDate: st.receiptDate || '',
+          remarks: st.paid ? 'Paid' : 'Unpaid'
+        });
+      }
+      return rows;
+    }
+
+    function interestOccurredForBorrower(b) {
+      return num(scheduleForBorrower(b).filter(r => r.paid && r.date <= todayISO()).reduce((s, r) => s + r.monthlyInterest, 0));
+    }
+
+    function outstandingAmount(b) {
+      return num(scheduleForBorrower(b).reduce((s, r) => s + (r.paid ? 0 : r.emi), 0));
+    }
+
+    function remainingTenure(b) {
+      return scheduleForBorrower(b).filter(r => !r.paid).length;
+    }
+
+    function totalPrincipal() {
+      return num(state.borrowers.reduce((s, b) => s + num(b.amount), 0));
+    }
+    function totalEmiReceipts() {
+      return num(state.borrowers.reduce((sum, b) => sum + scheduleForBorrower(b).filter(r => r.paid).reduce((s, r) => s + r.emi, 0), 0));
+    }
+    function totalContribution() {
+      return num(state.contributions.reduce((s, x) => s + num(x.amount), 0));
+    }
+    function totalReceipts() {
+      return num(totalEmiReceipts() + totalContribution());
+    }
+    function totalPayments() {
+      return num(totalPrincipal() + totalExpenditure());
+    }
+    function totalExpenditure() {
+      return num(state.expenditures.reduce((s, x) => s + num(x.amount), 0));
+    }
+    function totalOutstandingEmi() {
+      return num(state.borrowers.reduce((sum, b) => sum + outstandingAmount(b), 0));
+    }
+    function projectedReturnsAfterClearance() {
+      return num(totalReceipts() + totalOutstandingEmi());
+    }
+
+    function totalInterestOccurredTillDate() {
+      return num(state.borrowers.reduce((sum, b) => sum + interestOccurredForBorrower(b), 0));
+    }
+    function loanStatusForBorrower(b) {
+      const rows = scheduleForBorrower(b);
+      return rows.length && rows.every(r => r.paid) ? 'Closed' : 'Active';
+    }
+    function closingBalance() {
+      return num(num(state.openingBalance) + totalReceipts() - totalPayments());
+    }
+
+    function updateClock() {
+      const d = new Date();
+      el('clockText').textContent = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) + ' • ' + d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+    }
+
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      const sec = el(id);
+      if (sec) sec.classList.add('active');
+      document.querySelectorAll('#navButtons button[data-target]').forEach(btn => btn.classList.toggle('active', btn.dataset.target === id));
+      closeSidebar();
+      refreshAll();
+      if (id === 'newLoan') updateSavedCodeBanner();
+      if (id === 'borrowerStatementPage' && activeBorrowerCode) {
+        const b = getBorrowerByCode(activeBorrowerCode);
+        if (b) renderStatement(b);
+      }
+      if (id === 'cashbook') renderCashbook();
+    }
+
+    function updateLoanPreview() {
+      const amount = num(el('amount').value);
+      const rate = num(el('rate').value);
+      const months = parseInt(el('months').value || '0', 10);
+      const emi = amount && rate && months ? calcEMI(amount, rate, months) : 0;
+      el('emi').value = emi ? fmt(emi) : '';
+    }
+
+    function updateSavedCodeBanner() {
+      const banner = el('savedCodeBanner');
+      if (pendingEditCode) {
+        banner.classList.remove('hidden');
+        el('savedCodeText').textContent = 'Editing borrower code: ' + pendingEditCode;
+      } else if (window.__lastSavedBorrowerCode) {
+        banner.classList.remove('hidden');
+        el('savedCodeText').textContent = 'Saved borrower code: ' + window.__lastSavedBorrowerCode;
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function clearLoanForm() {
+      el('loanForm').reset();
+      el('emi').value = '';
+      pendingEditCode = null;
+      updateSavedCodeBanner();
+      el('loanDate').value = todayISO();
+    }
+
+    function fillFormFromBorrower(b) {
+      el('borrowerName').value = b.name || '';
+      el('fatherName').value = b.fatherName || '';
+      el('gender').value = b.gender || '';
+      el('occupation').value = b.occupation || '';
+      el('contact').value = b.contact || '';
+      el('address').value = b.address || '';
+      el('amount').value = b.amount || '';
+      el('rate').value = b.rate || '';
+      el('months').value = b.months || '';
+      el('loanDate').value = b.loanDate || todayISO();
+      el('gName').value = b.gName || '';
+      el('gOcc').value = b.gOcc || '';
+      el('gContact').value = b.gContact || '';
+      el('gAddress').value = b.gAddress || '';
+      pendingEditCode = b.code;
+      updateSavedCodeBanner();
+      showSection('newLoan');
+      toast('Borrower loaded for editing');
+    }
+
+    function renderDashboard() {
+      el('statBorrowers').textContent = state.borrowers.length;
+      el('statPrincipal').textContent = fmt(totalPrincipal());
+      const interestEl = el('statInterestOccurred');
+      if(interestEl){
+        interestEl.textContent = fmt(totalInterestOccurredTillDate());
+      }
+      el('statProjected').textContent = fmt(projectedReturnsAfterClearance());
+      el('statClosing').textContent = fmt(closingBalance());
+    }
+
+    function renderBorrowerList() {
+      const q = (el('searchBorrower').value || '').trim().toLowerCase();
+      const filtered = state.borrowers.filter(b => !q || [b.name, b.code, b.contact, b.fatherName, b.occupation].join(' ').toLowerCase().includes(q));
+      el('borrowerCountText').textContent = filtered.length + ' record' + (filtered.length === 1 ? '' : 's');
+      if (!filtered.length) {
+        el('borrowerListContainer').innerHTML = '<div class="muted">No borrower found.</div>';
+        return;
+      }
+      const html = ['<div class="table-wrap"><table style="min-width:900px"><thead><tr><th>Sl. No</th><th>Name of Borrower</th><th>Code</th><th>Contact</th><th>Father\'s Name</th><th>Occupation</th><th>Date of Borrowing</th><th>Action</th></tr></thead><tbody>'];
+      filtered.forEach((b, i) => {
+        html.push(`<tr>
+          <td>${i + 1}</td>
+          <td><button class="btn btn-ghost btn-small" style="padding:0;background:none;border:none;color:var(--text);text-decoration:underline;cursor:pointer" onclick="window.__openBorrowerStatement('${b.code}')">${esc(b.name)}</button></td>
+          <td>${esc(b.code)}</td>
+          <td>${esc(b.contact)}</td>
+          <td>${esc(b.fatherName)}</td>
+          <td>${esc(b.occupation)}</td>
+          <td>${esc(formatDateShort(b.loanDate))}</td>
+          <td><button class="btn btn-secondary btn-small" onclick="window.__openBorrowerStatement('${b.code}')">Open</button></td>
+        </tr>`);
+      });
+      html.push('</tbody></table></div>');
+      el('borrowerListContainer').innerHTML = html.join('');
+    }
+
+    function renderStatement(b) {
+      if (!b) {
+        el('statementContainer').innerHTML = '<div class="muted">Select a borrower to view statement.</div>';
+        return;
+      }
+      activeBorrowerCode = b.code;
+      const rows = scheduleForBorrower(b);
+      const isClosed = loanStatusForBorrower(b) === 'Closed';
+      const scheduleHtml = `<div class="table-wrap"><table style="min-width:980px"><thead><tr><th>Months</th><th>EMI Amount</th><th>Interest Portion</th><th>Receipt Date</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows.map(r => `<tr>
+        <td>${esc(r.month)}</td>
+        <td>${fmt(r.emi)}</td>
+        <td>${fmt(r.monthlyInterest)}</td>
+        <td><input type="date" class="input receipt-date-input" min="${esc(b.loanDate || todayISO())}" value="${esc(r.receiptDate || '')}" onchange="window.__updateReceiptDate('${b.code}','${r.date}', this.value)" /></td>
+        <td><span class="badge ${r.paid ? 'paid' : 'unpaid'}">${r.paid ? 'Paid' : 'Unpaid'}</span></td>
+        <td><input type="checkbox" ${r.paid ? 'checked' : ''} onchange="window.__toggleInstallment('${b.code}','${r.date}', this.checked)"></td>
+      </tr>`).join('')}</tbody></table></div>`;
+
+      el('statementContainer').innerHTML = `
+        <div class="card" style="padding:12px;margin-bottom:10px">
+          <div class="space-between">
+            <h3 style="margin:0">${esc(b.name)}</h3>
+            <span class="status-chip">${isClosed ? 'Loan Closed' : 'Loan Active'}</span>
+          </div>
+        </div>
+        ${scheduleHtml}`;
+    }
+
+    function renderAllBorrowers() {
+      const rows = state.borrowers.map((b, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${esc(b.name)}</td>
+          <td>${esc(b.code)}</td>
+          <td>${fmt(b.amount)}</td>
+          <td>${esc(formatDateShort(b.loanDate))}</td>
+          <td>${fmt(interestOccurredForBorrower(b))}</td>
+          <td>
+            <div class="flex no-print">
+              <button class="btn btn-secondary btn-small" onclick="window.__openBorrowerStatement('${b.code}')">View</button>
+              <button class="btn btn-secondary btn-small" onclick="window.__editBorrower('${b.code}')">Edit</button>
+              <button class="btn btn-danger btn-small" onclick="window.__deleteBorrower('${b.code}')">Delete</button>
+            </div>
+          </td>
+        </tr>`).join('') || '<tr><td colspan="7">No borrower records yet.</td></tr>';
+      el('allBorrowersTable').innerHTML = rows;
+      el('totalPrincipalCell').textContent = fmt(totalPrincipal());
+      el('totalInterestCell').textContent = fmt(state.borrowers.reduce((s, b) => s + interestOccurredForBorrower(b), 0));
+    }
+
+    function renderContribution() {
+      el('contribTable').innerHTML = state.contributions.slice().reverse().map(c => `
+        <tr>
+          <td>${esc(formatDateShort(c.date))}</td>
+          <td>${fmt(c.amount)}</td>
+          <td>${esc(c.notes || '')}</td>
+          <td><button class="btn btn-danger btn-small no-print" onclick="window.__deleteContribution('${c.id}')">Delete</button></td>
+        </tr>`).join('') || '<tr><td colspan="4">No contribution entries yet.</td></tr>';
+    }
+
+    function renderExpenditure() {
+      el('expTable').innerHTML = state.expenditures.slice().reverse().map(x => `
+        <tr>
+          <td>${esc(formatDateShort(x.date))}</td>
+          <td>${esc(x.particulars)}</td>
+          <td>${fmt(x.amount)}</td>
+          <td><button class="btn btn-danger btn-small no-print" onclick="window.__deleteExpenditure('${x.id}')">Delete</button></td>
+        </tr>`).join('') || '<tr><td colspan="4">No expenditure entries yet.</td></tr>';
+    }
+
+    function ledgerDateValue(value) {
+      const dt = parseDateAtStart(value);
+      return dt ? dt.getTime() : Number.POSITIVE_INFINITY;
+    }
+
+    function cashbookRowPriority(item) {
+      const particulars = String(item && item.particulars ? item.particulars : '');
+      if (particulars.startsWith('New Loan Disbursed')) return 0;
+      if (particulars.startsWith('EMI Receipt')) return 1;
+      if (particulars.startsWith('Members Contribution')) return 2;
+      if (particulars.startsWith('Expenditure')) return 3;
+      return 9;
+    }
+
+    function cashbookEntries() {
+      const arr = [];
+      state.borrowers.forEach(b => {
+        const loanDate = b.loanDate || todayISO();
+        arr.push({
+          date: loanDate,
+          sortAt: b.createdAt || `${loanDate}T00:00:00`,
+          particulars: `New Loan Disbursed - ${b.name} (${b.code})`,
+          receipt: 0,
+          payment: num(b.amount)
+        });
+        scheduleForBorrower(b).filter(r => r.paid).forEach(r => {
+          const receiptDate = r.receiptDate || r.date || loanDate;
+          if (loanDate && receiptDate && receiptDate < loanDate) return;
+          arr.push({
+            date: receiptDate,
+            sortAt: r.receiptAt || `${receiptDate || loanDate}T23:59:59`,
+            particulars: `EMI Receipt - ${b.name} (${b.code}) - ${r.month}`,
+            receipt: num(r.emi),
+            payment: 0
+          });
+        });
+      });
+      state.contributions.forEach(c => arr.push({
+        date: c.date || todayISO(),
+        sortAt: c.createdAt || `${c.date || todayISO()}T00:00:00`,
+        particulars: `Members Contribution${c.notes ? ' - ' + c.notes : ''}`,
+        receipt: num(c.amount),
+        payment: 0
+      }));
+      state.expenditures.forEach(x => arr.push({
+        date: x.date || todayISO(),
+        sortAt: x.createdAt || `${x.date || todayISO()}T00:00:00`,
+        particulars: `Expenditure - ${x.particulars}`,
+        receipt: 0,
+        payment: num(x.amount)
+      }));
+      arr.sort((a, b) => {
+        const da = ledgerDateValue(a.date);
+        const db = ledgerDateValue(b.date);
+        if (da !== db) return da - db;
+        const pa = cashbookRowPriority(a);
+        const pb = cashbookRowPriority(b);
+        if (pa !== pb) return pa - pb;
+        const ta = ledgerDateValue(a.sortAt || a.date);
+        const tb = ledgerDateValue(b.sortAt || b.date);
+        if (ta !== tb) return ta - tb;
+        return String(a.particulars).localeCompare(String(b.particulars));
+      });
+      return arr;
+    }
+
+    function renderCashbook() {
+      el('openingBalance').value = num(state.openingBalance);
+      el('openingBalanceDate').value = state.openingBalanceDate || todayISO();
+      const emiTotal = totalEmiReceipts();
+      const contribTotal = totalContribution();
+      const paymentTotal = totalPayments();
+      const closing = closingBalance();
+      el('cashEmiTotal').textContent = fmt(emiTotal);
+      el('cashContribTotal').textContent = fmt(contribTotal);
+      el('cashPaymentTotal').textContent = fmt(paymentTotal);
+      el('cashClosingTotal').textContent = fmt(closing);
+
+      const entries = cashbookEntries();
+      let running = num(state.openingBalance);
+      let html = [];
+      html.push(`<tr><td>${esc(formatLongDate(state.openingBalanceDate || todayISO()))}</td><td><strong>Opening Balance</strong></td><td>0.00</td><td>0.00</td><td><strong>${fmt(running)}</strong></td></tr>`);
+      entries.forEach(item => {
+        running = num(running + num(item.receipt) - num(item.payment));
+        html.push(`<tr>
+          <td>${esc(formatLongDate(item.date))}</td>
+          <td>${esc(item.particulars)}</td>
+          <td>${num(item.receipt) ? fmt(item.receipt) : ''}</td>
+          <td>${num(item.payment) ? fmt(item.payment) : ''}</td>
+          <td>${fmt(running)}</td>
+        </tr>`);
+      });
+      html.push(`<tr><td>${formatLongDate(todayISO())}</td><td><strong>Closing Balance</strong></td><td>0.00</td><td>0.00</td><td><strong>${fmt(running)}</strong></td></tr>`);
+      el('cashbookTable').innerHTML = html.join('');
+      el('cashbookSummary').innerHTML = `Current cashbook result: <strong>${closing >= 0 ? 'Positive' : 'Negative'}</strong> balance of ${fmt(Math.abs(closing))}.`;
+    }
+
+    function refreshAll() {
+      renderDashboard();
+      renderBorrowerList();
+      renderAllBorrowers();
+      renderContribution();
+      renderExpenditure();
+      renderCashbook();
+      updateSavedCodeBanner();
+      if (activeBorrowerCode && el('borrowerStatementPage').classList.contains('active')) {
+        const b = getBorrowerByCode(activeBorrowerCode);
+        if (b) renderStatement(b);
+      }
+    }
+
+    function openAuthModal(message, expectedCode = AUTH_CODE) {
+      authExpectedCode = expectedCode;
+      return new Promise(resolve => {
+        authResolver = resolve;
+        el('authMessage').textContent = message;
+        el('authInput').value = '';
+        el('authError').textContent = '';
+        el('authBackdrop').classList.add('show');
+        setTimeout(() => el('authInput').focus(), 50);
+      });
+    }
+    function closeAuthModal(result) {
+      el('authBackdrop').classList.remove('show');
+      if (authResolver) {
+        const fn = authResolver;
+        authResolver = null;
+        fn(!!result);
+      }
+    }
+    function handleAuthSubmit() {
+      const code = el('authInput').value.trim();
+      if (code === authExpectedCode) closeAuthModal(true);
+      else {
+        el('authError').textContent = 'Wrong code';
+        el('authInput').value = '';
+        el('authInput').focus();
+      }
+    }
+    async function requireAuth(actionName) {
+      return await openAuthModal('Enter authorized code to ' + actionName + '.');
+    }
+
+    function savePdfBlob(doc, filename) {
+      doc.save(filename);
+    }
+
+    function drawFinanceLogo(doc, x, y, scale = 1) {
+      const w = 14 * scale;
+      const h = 14 * scale;
+      doc.setFillColor(236, 253, 249);
+      doc.setDrawColor(45, 212, 191);
+      doc.roundedRect(x, y, w, h, 3 * scale, 3 * scale, 'FD');
+      doc.setFillColor(96, 165, 250);
+      doc.circle(x + 4.2 * scale, y + 4.2 * scale, 1.4 * scale, 'F');
+      doc.setDrawColor(45, 212, 191);
+      doc.setLineWidth(0.6 * scale);
+      doc.line(x + 4 * scale, y + 9.5 * scale, x + 8 * scale, y + 6.5 * scale);
+      doc.line(x + 8 * scale, y + 6.5 * scale, x + 10.5 * scale, y + 8 * scale);
+      doc.setFont('times', 'bold');
+      doc.setTextColor(7, 16, 25);
+      doc.setFontSize(10 * scale);
+      doc.text('₹', x + 7 * scale, y + 9.6 * scale, { align: 'center' });
+    }
+
+    function drawPdfHeader(doc, title, subtitle) {
+      const pageW = doc.internal.pageSize.getWidth();
+      doc.setDrawColor(220, 228, 236);
+      doc.setFillColor(250, 252, 255);
+      doc.rect(0, 0, pageW, 36, 'F');
+
+      drawFinanceLogo(doc, 12, 9, 1);
+
+      doc.setFont('times', 'bold');
+      doc.setTextColor(14, 116, 144);
+      doc.setFontSize(22);
+      doc.text('Micro Finance', 30, 16);
+
+      doc.setFontSize(12);
+      doc.setTextColor(14, 116, 144);
+      doc.text(title, 30, 24);
+
+      if (subtitle) {
+        doc.setFontSize(8.5);
+        doc.setTextColor(95, 106, 118);
+        doc.setFont('times', 'normal');
+        doc.text(subtitle, 30, 30);
+      }
+
+      doc.setFont('times', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(14, 116, 144);
+      doc.text(formatLongDate(todayISO()), pageW - 12, 14, { align: 'right' });
+
+      doc.setDrawColor(198, 209, 220);
+      doc.line(12, 34, pageW - 12, 34);
+      doc.setTextColor(0, 0, 0);
+    }
+
+    function pdfFooter(doc, y) {
+      doc.setDrawColor(180);
+      doc.line(12, y, 198, y);
+      doc.setFont('times', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(70, 70, 70);
+      doc.text('Confidential loan documents - Generated by Micro Finance', 12, y + 6);
+    }
+
+    function currentLoanFormData() {
+      return {
+        code: pendingEditCode || '',
+        name: el('borrowerName').value.trim(),
+        fatherName: el('fatherName').value.trim(),
+        gender: el('gender').value,
+        occupation: el('occupation').value.trim(),
+        contact: el('contact').value.trim(),
+        address: el('address').value.trim(),
+        amount: num(el('amount').value),
+        rate: num(el('rate').value),
+        months: parseInt(el('months').value, 10) || '',
+        loanDate: el('loanDate').value,
+        gName: el('gName').value.trim(),
+        gOcc: el('gOcc').value.trim(),
+        gContact: el('gContact').value.trim(),
+        gAddress: el('gAddress').value.trim(),
+        terms: DEFAULT_TERMS
+      };
+    }
+
+    function downloadLoanFormPdf(b, options = {}) {
+      const JsPDF = window.jspdf.jsPDF;
+      const doc = new JsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+      drawPdfHeader(doc, 'Loan Form', 'Borrower, loan and guarantor details');
+
+      const left = 12;
+      const right = 198;
+      let y = 42;
+
+      doc.setDrawColor(205, 214, 223);
+      doc.setFillColor(255, 255, 255);
+
+      doc.setFont('times', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(14, 116, 144);
+      doc.text('Borrower Details', left, y);
+      y += 5;
+      doc.setDrawColor(210, 218, 226);
+      doc.line(left, y, right - 12, y);
+      y += 7;
+
+      const writeLine = (label, value, labelWidth = 54, valueWidth = 108) => {
+        doc.setFont('times', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(35, 45, 55);
+        doc.text(label + ':', left, y);
+        doc.setFont('times', 'normal');
+        doc.setTextColor(55, 65, 75);
+        const textValue = value === undefined || value === null || value === '' ? ' ' : String(value);
+        const wrapped = doc.splitTextToSize(textValue, valueWidth);
+        doc.text(wrapped, left + labelWidth, y);
+        y += Math.max(6, wrapped.length * 5.5);
+      };
+      
+      writeLine('Borrower Code', b.code);
+      writeLine('Borrower Name', b.name);
+      writeLine("Father's Name", b.fatherName);
+      writeLine('Gender', b.gender);
+      writeLine('Occupation', b.occupation);
+      writeLine('Contact', b.contact);
+      writeLine('Address', b.address);
+
+      const px = 145;
+      const py = 48;
+      const pw = 42;
+      const ph = 42;
+      doc.setDrawColor(130, 150, 170);
+      doc.setLineDashPattern([2, 2], 0);
+      doc.roundedRect(px, py, pw, ph, 2.5, 2.5);
+      doc.setLineDashPattern([], 0);
+      doc.setFont('times', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(21, 101, 192);
+      doc.text('Passport Photo', px + pw / 2, py + 8, { align: 'center' });
+      doc.setFont('times', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(85, 95, 105);
+      doc.text('(Optional)', px + pw / 2, py + 13, { align: 'center' });
+      doc.setTextColor(125, 135, 145);
+      doc.text('Space for', px + pw / 2, py + 25, { align: 'center' });
+      doc.text('passport size photo', px + pw / 2, py + 30, { align: 'center' });
+
+      y += 2;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(14, 116, 144);
+      doc.text('Loan Details', left, y);
+      y += 5;
+      doc.setDrawColor(210, 218, 226);
+      doc.line(left, y, right - 12, y);
+      y += 7;
+      const emi = num(calcEMI(num(b.amount), num(b.rate), parseInt(b.months, 10)));
+      writeLine('Amount', fmt(b.amount));
+      writeLine('Interest Rate (per month)', num(b.rate) + '%');
+      writeLine('Recovery Period', b.months + ' months');
+      writeLine('Date of Borrowing', formatLongDate(b.loanDate));
+      writeLine('Monthly EMI', fmt(emi));
+      writeLine('Loan Payable', fmt(emi * parseInt(b.months, 10)));
+
+      y += 2;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(14, 116, 144);
+      doc.text('Guarantor Details', left, y);
+      y += 5;
+      doc.setDrawColor(210, 218, 226);
+      doc.line(left, y, right - 12, y);
+      y += 7;
+      writeLine('Guarantor Name', b.gName);
+      writeLine('Occupation', b.gOcc);
+      writeLine('Contact', b.gContact);
+      writeLine('Address', b.gAddress);
+
+      if (y > 200) y = 200;
+      y += 2;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(14, 116, 144);
+      doc.text('Terms & Conditions', left, y);
+      y += 5;
+      doc.setDrawColor(210, 218, 226);
+      doc.line(left, y, right - 12, y);
+      y += 6;
+      doc.setFont('times', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(50, 60, 70);
+      const terms = (b.terms || DEFAULT_TERMS).split('\n\n');
+      terms.forEach((t, idx) => {
+        const wrapped = doc.splitTextToSize(t, 175);
+        doc.text(wrapped, left, y);
+        y += wrapped.length * 5 + (idx < terms.length - 1 ? 2 : 0);
+      });
+
+      y += 6;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(14, 116, 144);
+      doc.text('Signatory', left, y);
+      y += 5;
+      doc.setDrawColor(210, 218, 226);
+      doc.line(left, y, right - 12, y);
+      y += 16;
+      doc.setFont('times', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(35, 45, 55);
+      doc.text('Authorized Signatory: ____________________', left, y);
+      doc.text('Borrower Signature: ______________________', left + 95, y);
+      y += 12;
+      doc.text('Guarantor Signature: _____________________', left, y);
+
+      pdfFooter(doc, 282);
+      savePdfBlob(doc, `Loan_Form_${b.code}.pdf`);
+      if (options.resetAfter) clearLoanForm();
+    }
+
+    function downloadStatementPdf(b) {
+      const JsPDF = window.jspdf.jsPDF;
+      const doc = new JsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+      drawPdfHeader(doc, 'Borrower Statement', 'Statement of loan recovery and installment status');
+      doc.setFont('times', 'normal');
+      doc.setFontSize(10);
+      doc.text(`Borrower Name: ${b.name}`, 12, 48);
+      doc.text(`Borrower Code: ${b.code}`, 12, 55);
+      doc.text(`Date of Borrowing: ${formatLongDate(b.loanDate)}`, 12, 62);
+      doc.text(`Monthly EMI: ${fmt(calcEMI(num(b.amount), num(b.rate), parseInt(b.months, 10)))}`, 150, 48);
+      doc.text(`Outstanding Amount: ${fmt(outstandingAmount(b))}`, 150, 55);
+      doc.text(`Remaining Tenure: ${remainingTenure(b)} months`, 150, 62);
+      let y = 72;
+      doc.setFont('times', 'bold');
+      doc.text('Month', 12, y);
+      doc.text('EMI Amount', 70, y);
+      doc.text('Interest Portion', 115, y);
+      doc.text('Receipt Date', 165, y);
+      doc.text('Remarks', 220, y);
+      y += 4;
+      doc.line(12, y, 285, y);
+      y += 7;
+      doc.setFont('times', 'normal');
+      scheduleForBorrower(b).forEach(r => {
+        if (y > 185) {
+          doc.addPage();
+          drawPdfHeader(doc, 'Borrower Statement', 'Statement of loan recovery and installment status');
+          y = 20;
+        }
+        doc.text(String(r.month), 12, y);
+        doc.text(fmt(r.emi), 70, y);
+        doc.text(fmt(r.monthlyInterest), 115, y);
+        doc.text(r.receiptDate ? formatDateShort(r.receiptDate) : '-', 165, y);
+        doc.text(r.remarks, 220, y);
+        y += 7;
+      });
+      y += 4;
+      doc.setFont('times', 'bold');
+      doc.text(`Loan Amount: ${fmt(b.amount)}`, 12, y);
+      doc.text(`Paid Installments: ${scheduleForBorrower(b).filter(r => r.paid).length}`, 180, y);
+      pdfFooter(doc, 196);
+      savePdfBlob(doc, `Statement_${b.code}.pdf`);
+    }
+
+    function downloadAllBorrowersPdf() {
+      const JsPDF = window.jspdf.jsPDF;
+      const doc = new JsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+      drawPdfHeader(doc, 'All Borrowers Summary');
+      let y = 48;
+      doc.setFont('times', 'bold');
+      ['Sl. No','Borrower Name','Code','Amount','Date of Borrowing','Interest Occurred'].forEach((h, i) => doc.text(h, [12, 35, 92, 123, 153, 210][i], y));
+      y += 4;
+      doc.line(12, y, 285, y);
+      y += 7;
+      doc.setFont('times', 'normal');
+      state.borrowers.forEach((b, i) => {
+        if (y > 188) {
+          pdfFooter(doc, 196);
+          doc.addPage();
+          drawPdfHeader(doc, 'All Borrowers Summary');
+          y = 22;
+        }
+        doc.text(String(i + 1), 12, y);
+        doc.text(String(b.name).slice(0, 26), 35, y);
+        doc.text(String(b.code), 92, y);
+        doc.text(fmt(b.amount), 123, y);
+        doc.text(formatDateShort(b.loanDate), 153, y);
+        doc.text(fmt(interestOccurredForBorrower(b)), 210, y);
+        y += 7;
+      });
+      y += 4;
+      doc.setFont('times', 'bold');
+      doc.text(`Total Principal: ${fmt(totalPrincipal())}`, 12, y);
+      doc.text(`Total Interest: ${fmt(state.borrowers.reduce((s, b) => s + interestOccurredForBorrower(b), 0))}`, 110, y);
+      pdfFooter(doc, 196);
+      savePdfBlob(doc, 'All_Borrowers_Summary.pdf');
+    }
+    
+    function downloadContribOrExp(type) {
+      const JsPDF = window.jspdf.jsPDF;
+      const title = type === 'contrib' ? 'Members Contribution' : 'Members Expenditure';
+      const doc = new JsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+      drawPdfHeader(doc, title, type === 'contrib' ? 'Member contributions report' : 'Member expenditure report');
+      let y = 50;
+      doc.setFont('times', 'bold');
+      if (type === 'contrib') {
+        doc.text('Date', 12, y);
+        doc.text('Amount', 165, y);
+      } else {
+        doc.text('Date', 12, y);
+        doc.text('Particulars', 45, y);
+        doc.text('Amount', 165, y);
+      }
+      y += 4;
+      doc.line(12, y, 198, y);
+      y += 7;
+      doc.setFont('times', 'normal');
+      const arr = type === 'contrib' ? state.contributions.slice() : state.expenditures.slice();
+      arr.forEach(item => {
+        if (y > 275) {
+          pdfFooter(doc, 282);
+          doc.addPage();
+          drawPdfHeader(doc, title, type === 'contrib' ? 'Member contributions report' : 'Member expenditure report');
+          y = 20;
+        }
+        doc.text(formatDateShort(item.date), 12, y);
+        if (type === 'contrib') doc.text(fmt(item.amount), 165, y);
+        else {
+          doc.text(String(item.particulars).slice(0, 55), 45, y);
+          doc.text(fmt(item.amount), 165, y);
+        }
+        y += 7;
+      });
+      pdfFooter(doc, 282);
+      savePdfBlob(doc, type === 'contrib' ? 'Members_Contribution.pdf' : 'Members_Expenditure.pdf');
+    }
+
+    function downloadCashbookPdf() {
+      const JsPDF = window.jspdf.jsPDF;
+      const doc = new JsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+      drawPdfHeader(doc, 'Cashbook Register');
+      let y = 48;
+      doc.setFont('times', 'bold');
+      doc.text('Date', 12, y);
+      doc.text('Particulars', 48, y);
+      doc.text('Receipts', 170, y);
+      doc.text('Payments', 220, y);
+      doc.text('Balance', 270, y);
+      y += 4;
+      doc.line(12, y, 285, y);
+      y += 7;
+      doc.setFont('times', 'normal');
+      let running = num(state.openingBalance);
+      const writeRow = (date, particulars, receipt, payment, bal) => {
+        if (y > 188) {
+          pdfFooter(doc, 196);
+          doc.addPage();
+          drawPdfHeader(doc, 'Cashbook Register');
+          y = 22;
+          doc.setFont('times', 'bold');
+          doc.text('Date', 12, y);
+          doc.text('Particulars', 48, y);
+          doc.text('Receipts', 170, y);
+          doc.text('Payments', 220, y);
+          doc.text('Balance', 270, y);
+          y += 4;
+          doc.line(12, y, 285, y);
+          y += 7;
+          doc.setFont('times', 'normal');
+        }
+        doc.text(date, 12, y);
+        doc.text(particulars.slice(0, 72), 48, y);
+        doc.text(receipt ? fmt(receipt) : '', 170, y);
+        doc.text(payment ? fmt(payment) : '', 220, y);
+        doc.text(fmt(bal), 270, y, { align:'right' });
+        y += 7;
+      };
+      writeRow(formatDateShort(state.openingBalanceDate || todayISO()), 'Opening Balance', 0, 0, running);
+      cashbookEntries().forEach(item => {
+        running = num(running + num(item.receipt) - num(item.payment));
+        writeRow(formatDateShort(item.date), item.particulars, num(item.receipt), num(item.payment), running);
+      });
+      writeRow(formatDateShort(todayISO()), 'Closing Balance', 0, 0, running);
+      pdfFooter(doc, 196);
+      savePdfBlob(doc, 'Cashbook_Register.pdf');
+    }
+
+
+
+
+    function logout() {
+      currentUser = null;
+      el('appPage').classList.add('hidden');
+      el('loginPage').classList.remove('hidden');
+      el('loginUser').value = '';
+      el('loginPass').value = '';
+      closeSidebar();
+    }
+
+    window.__openBorrowerStatement = (code) => {
+      const b = getBorrowerByCode(code);
+      if (b) {
+        activeBorrowerCode = code;
+        window.__currentBorrower = b;
+        renderStatement(b);
+        showSection('borrowerStatementPage');
+      }
+    };
+
+    window.__editBorrower = async (code) => {
+      if (!await requireAuth('edit this record')) { toast('Unauthorized'); return; }
+      const b = getBorrowerByCode(code);
+      if (b) fillFormFromBorrower(b);
+    };
+
+    window.__deleteBorrower = async (code) => {
+      if (!await requireAuth('delete this record')) { toast('Unauthorized'); return; }
+      state.borrowers = state.borrowers.filter(b => b.code !== code);
+      if (activeBorrowerCode === code) activeBorrowerCode = null;
+      saveState();
+      refreshAll();
+      toast('Borrower deleted');
+    };
+
+    window.__deleteContribution = async (id) => {
+      if (!await requireAuth('delete this contribution')) { toast('Unauthorized'); return; }
+      state.contributions = state.contributions.filter(x => x.id !== id);
+      saveState();
+      refreshAll();
+      toast('Contribution deleted');
+    };
+
+    window.__deleteExpenditure = async (id) => {
+      if (!await requireAuth('delete this expenditure')) { toast('Unauthorized'); return; }
+      state.expenditures = state.expenditures.filter(x => x.id !== id);
+      saveState();
+      refreshAll();
+      toast('Expenditure deleted');
+    };
+
+    window.__toggleInstallment = async (code, monthDate, checked) => {
+      if (!await requireAuth('change paid/unpaid status')) {
+        toast('Unauthorized');
+        refreshAll();
+        return;
+      }
+      const b = getBorrowerByCode(code);
+      if (!b) return;
+      b.installments = b.installments || {};
+      const existing = b.installments[monthDate] || { paid:false, receiptDate:'' };
+      b.installments[monthDate] = existing;
+      b.installments[monthDate].paid = checked;
+      const fallbackDate = (b.loanDate && b.loanDate > todayISO()) ? b.loanDate : todayISO();
+      b.installments[monthDate].receiptDate = checked ? (existing.receiptDate || fallbackDate) : '';
+      b.installments[monthDate].receiptAt = checked ? (existing.receiptAt || new Date().toISOString()) : '';
+      b.loanClosed = loanStatusForBorrower(b) === 'Closed';
+      b.closedAt = b.loanClosed ? (b.closedAt || todayISO()) : '';
+      saveState();
+      refreshAll();
+      if (activeBorrowerCode) {
+        const cur = getBorrowerByCode(activeBorrowerCode);
+        if (cur) renderStatement(cur);
+      }
+      toast('Installment updated');
+    };
+
+    window.__updateReceiptDate = async (code, monthDate, receiptDate) => {
+      if (!receiptDate) return;
+      const b = getBorrowerByCode(code);
+      if (!b) return;
+      const loanDate = b.loanDate || '';
+      if (loanDate && receiptDate < loanDate) {
+        toast('EMI receipt date cannot be before loan disbursement date');
+        refreshAll();
+        return;
+      }
+      if (!await requireAuth('change EMI receipt date')) {
+        toast('Unauthorized');
+        refreshAll();
+        return;
+      }
+      b.installments = b.installments || {};
+      b.installments[monthDate] = b.installments[monthDate] || { paid:true, receiptDate:'' };
+      b.installments[monthDate].paid = true;
+      b.installments[monthDate].receiptDate = receiptDate;
+      b.installments[monthDate].receiptAt = `${receiptDate}T12:00:00`;
+      b.loanClosed = loanStatusForBorrower(b) === 'Closed';
+      b.closedAt = b.loanClosed ? (b.closedAt || todayISO()) : '';
+      saveState();
+      refreshAll();
+      if (activeBorrowerCode) {
+        const cur = getBorrowerByCode(activeBorrowerCode);
+        if (cur) renderStatement(cur);
+      }
+      toast('EMI receipt date updated');
+    };
+
+    function renderCashbookAndSaveOpening() {
+      state.openingBalance = num(el('openingBalance').value);
+      state.openingBalanceDate = el('openingBalanceDate').value || todayISO();
+      saveState();
+      renderCashbook();
+      renderDashboard();
+      toast('Opening balance saved');
+    }
+
+    el('openSidebarBtn').addEventListener('click', openSidebar);
+    el('closeSidebarBtn').addEventListener('click', closeSidebar);
+    el('sidebarBackdrop').addEventListener('click', closeSidebar);
+    el('logoutBtn').addEventListener('click', logout);
+    el('logoutTopBtn').addEventListener('click', logout);
+    el('navButtons').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-target], button#logoutBtn');
+      if (!btn) return;
+      if (btn.id === 'logoutBtn') return logout();
+      showSection(btn.dataset.target);
+    });
+
+    el('loginBtn').addEventListener('click', () => {
+      const u = el('loginUser').value.trim();
+      const p = el('loginPass').value.trim();
+      if (u === LOGIN_USER && p === LOGIN_PASS) {
+        currentUser = u;
+        el('loginPage').classList.add('hidden');
+        el('appPage').classList.remove('hidden');
+        refreshAll();
+        showSection('dashboard');
+        toast('Login successful');
+      } else {
+        el('loginError').textContent = 'Wrong credentials';
+        toast('Wrong credentials');
+      }
+    });
+    el('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') el('loginBtn').click(); });
+    ['loginUser','loginPass'].forEach(id => el(id).addEventListener('input', () => { el('loginError').textContent = ''; }));
+
+    el('searchBorrower').addEventListener('input', renderBorrowerList);
+    ['borrowerName','fatherName','gender','occupation','contact','address','amount','rate','months','loanDate','gName','gOcc','gContact','gAddress'].forEach(id => {
+      el(id).addEventListener('input', updateLoanPreview);
+      el(id).addEventListener('change', updateLoanPreview);
+    });
+
+    el('loanForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const borrow = {
+        name: el('borrowerName').value.trim(),
+        fatherName: el('fatherName').value.trim(),
+        gender: el('gender').value,
+        occupation: el('occupation').value.trim(),
+        contact: el('contact').value.trim(),
+        address: el('address').value.trim(),
+        amount: num(el('amount').value),
+        rate: num(el('rate').value),
+        months: parseInt(el('months').value, 10),
+        loanDate: el('loanDate').value,
+        gName: el('gName').value.trim(),
+        gOcc: el('gOcc').value.trim(),
+        gContact: el('gContact').value.trim(),
+        gAddress: el('gAddress').value.trim(),
+        terms: DEFAULT_TERMS,
+        installments: {},
+        createdAt: new Date().toISOString()
+      };
+      if (!borrow.name || !borrow.amount || !borrow.rate || !borrow.months || !borrow.loanDate) {
+        toast('Please fill required fields');
+        return;
+      }
+      if (pendingEditCode) {
+        const idx = state.borrowers.findIndex(b => b.code === pendingEditCode);
+        if (idx >= 0) {
+          borrow.code = pendingEditCode;
+          borrow.installments = state.borrowers[idx].installments || {};
+          state.borrowers[idx] = borrow;
+        }
+      } else {
+        borrow.code = generateBorrowerCode(state.borrowers.length + 1);
+        state.borrowers.push(borrow);
+      }
+      window.__lastSavedBorrowerCode = borrow.code;
+      pendingEditCode = null;
+      saveState();
+      el('savedCodeBanner').classList.remove('hidden');
+      el('savedCodeText').textContent = 'Saved borrower code: ' + borrow.code;
+      window.__currentBorrower = getBorrowerByCode(borrow.code);
+      refreshAll();
+      renderStatement(getBorrowerByCode(borrow.code));
+      toast('Loan saved successfully');
+    });
+
+    el('resetLoanBtn').addEventListener('click', clearLoanForm);
+    el('downloadLoanBtn').addEventListener('click', () => { const b = window.__currentBorrower; if (!b) return toast('Save or select a borrower first'); downloadLoanFormPdf(b); });
+    el('downloadLoanBtnTop').addEventListener('click', () => downloadLoanFormPdf(currentLoanFormData(), { resetAfter: true }));
+    el('downloadStatementBtn').addEventListener('click', () => {
+      const b = window.__currentBorrower || (activeBorrowerCode ? getBorrowerByCode(activeBorrowerCode) : null);
+      if (!b) return toast('Select a borrower first');
+      window.__currentBorrower = b;
+      downloadStatementPdf(b);
+    });
+    el('backToListBtn').addEventListener('click', () => showSection('borrowersList'));
+    el('downloadAllBorrowersBtn').addEventListener('click', downloadAllBorrowersPdf);
+    el('downloadExpenditureBtn').addEventListener('click', () => downloadContribOrExp('exp'));
+    el('downloadCashbookBtn').addEventListener('click', downloadCashbookPdf);
+    el('exportJsonBtn').addEventListener('click', exportJson);
+    el('importJsonBtn').addEventListener('click', () => el('importJsonFile').click());
+    el('importJsonFile').addEventListener('change', e => importJsonFile(e.target.files && e.target.files[0]));
+    el('downloadHtmlBtn').addEventListener('click', async () => {
+      if (!await openAuthModal('Admin Access Only.', '1807')) {
+        toast('Unauthorized');
+        return;
+      }
+      downloadUpdatedHtml();
+    });
+
+    el('wipeAllBtn').addEventListener('click', async () => {
+      if (!await openAuthModal('Enter authorized code to reset all data.')) { toast('Unauthorized'); return; }
+      state.borrowers = [];
+      state.contributions = [];
+      state.expenditures = [];
+      state.openingBalance = 0;
+      pendingEditCode = null;
+      activeBorrowerCode = null;
+      window.__currentBorrower = null;
+      window.__lastSavedBorrowerCode = null;
+      saveState();
+      clearLoanForm();
+      el('openingBalance').value = '0';
+      refreshAll();
+      toast('All data cleared');
+    });
+
+    el('contribForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      state.contributions.push({ id: uid(), date: el('contribDate').value, amount: num(el('contribAmount').value), notes: el('contribNotes').value.trim(), createdAt: new Date().toISOString() });
+      saveState();
+      e.target.reset();
+      el('contribDate').value = todayISO();
+      refreshAll();
+      toast('Contribution saved');
+    });
+    el('contribResetBtn').addEventListener('click', () => el('contribForm').reset());
+
+    el('expForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      state.expenditures.push({ id: uid(), date: el('expDate').value, particulars: el('expParticulars').value.trim(), amount: num(el('expAmount').value), createdAt: new Date().toISOString() });
+      saveState();
+      e.target.reset();
+      el('expDate').value = todayISO();
+      refreshAll();
+      toast('Expenditure saved');
+    });
+    el('expResetBtn').addEventListener('click', () => el('expForm').reset());
+
+    el('saveOpeningBalanceBtn').addEventListener('click', renderCashbookAndSaveOpening);
+
+    el('authCancelBtn').addEventListener('click', () => closeAuthModal(false));
+    el('authOkBtn').addEventListener('click', handleAuthSubmit);
+    el('authBackdrop').addEventListener('click', e => { if (e.target === el('authBackdrop')) closeAuthModal(false); });
+    el('authInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleAuthSubmit();
+      if (e.key === 'Escape') closeAuthModal(false);
+    });
+
+    el('loanDate').value = todayISO();
+    el('contribDate').value = todayISO();
+    el('expDate').value = todayISO();
+    el('openingBalance').value = '0';
+    el('openingBalanceDate').value = todayISO();
+
+    window.addEventListener('resize', () => {
+      if (activeBorrowerCode && el('borrowerStatementPage').classList.contains('active')) {
+        const b = getBorrowerByCode(activeBorrowerCode);
+        if (b) renderStatement(b);
+      }
+    });
+
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    loadState();
+    if (!state.openingBalanceDate) state.openingBalanceDate = todayISO();
+    el('openingBalance').value = num(state.openingBalance);
+    el('openingBalanceDate').value = state.openingBalanceDate || todayISO();
+    refreshAll();
+    showSection('dashboard');
+
+    (async function boot() {
+      try {
+        refreshAll();
+      } catch (err) {
+        console.error(err);
+        document.body.insertAdjacentHTML('beforeend','<div style="position:fixed;bottom:10px;left:10px;background:#300;color:#fff;padding:10px;z-index:99999">Cashbook render error fixed fallback active</div>');
+        toast('App loaded with local data');
+      }
+    })();
+  </script>
+
+
+</body></html>
