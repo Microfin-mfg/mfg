@@ -1,5 +1,8 @@
 <html lang="en"><head>
-<!-- This application is created solely for demo and educational purposes. It does not represent or operate as an official financial institution or live production website. -->
+<!--
+  This application is intended solely for demonstration and educational purposes.
+  It does not represent real financial services, banking operations, or live financial products.
+-->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Micro Finance</title>
@@ -248,7 +251,7 @@
       color:#34d399;
     }
 
-    .print-only{display:none}
+    .pagination-controls{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:10px;flex-wrap:wrap}.table-grand-total{margin-top:10px;font-weight:700;text-align:right} .print-only{display:none}
     @media (max-width: 900px){
       :root{--sidebar-w:0px;--topbar-h:64px}
       .mobile-only{display:grid}
@@ -328,7 +331,7 @@
         <div class="group-title">System</div>
         <button id="importJsonBtn"><span>⤓</span><span>Import Backup</span></button>
         <button id="exportJsonBtn"><span>⤒</span><span>Export Backup</span></button>
-        <button id="downloadHtmlBtn"><span>⬇</span><span>Admin Backup</span></button>
+        <button id="downloadHtmlBtn"><span>⬇</span><span>Download Admin Backup</span></button>
         <button id="logoutBtn"><span>⎋</span><span>Logout</span></button>
       </div>
     </aside>
@@ -359,27 +362,30 @@
 
         <div class="card" style="margin-bottom:12px;overflow:hidden">
           <div class="alert-slider">
-            <span>🚨 "Manu toh Khumabo hoile be poisa to nakhumabo"🚨 &nbsp;&nbsp;&nbsp; 🚨 Alert alert! Save backup 🚨</span>
+            <span>🚨 Manu toh khumabo hoilebe poisa toh nakhumabo🚨 &nbsp;&nbsp;&nbsp; 🚨 Alert ! Save backup.!🚨</span>
           </div>
         </div>
 
-        <div class="grid cards">
-          <div class="card stat"><span>Total Borrowers</span><strong id="statBorrowers">1</strong></div>
-          <div class="card stat"><span>Total Principal Disbursed</span><strong id="statPrincipal">40,000</strong></div>
-          <div class="card stat interest-card">
-            <span>+ Total Interest Occurred Till Date</span>
-            <strong id="statInterestOccurred">1,200</strong>
-          </div>
-          <div class="card stat"><span>Estimated Total Recovery Amount</span><strong id="statProjected">52,300</strong><span class="sub"> </span></div>
-        </div>
+        
+<div class="grid cards">
+  <div class="card stat"><span>Total Borrowers</span><strong id="statBorrowers">0</strong></div>
+  <div class="card stat"><span>Total Principal Disbursed</span><strong id="statPrincipal">0</strong></div>
+  <div class="card stat interest-card"><span>+ Total Interest Occurred Till Date</span><strong id="statInterestOccurred">0</strong></div>
+  <div class="card stat"><span>Total Outstanding EMI Amount</span><strong id="statOutstandingEmi">0</strong></div>
+  <div class="card stat"><span>Total EMI Recovered</span><strong id="statEmiRecovered">0</strong></div>
+  <div class="card stat"><span>Total Receipt (Opening Balance + Contribution)</span><strong id="statTotalReceipt">0</strong></div>
+  <div class="card stat"><span>Total Expenditure</span><strong id="statTotalExpenditure">0</strong></div>
+</div>
 
-        <div class="card" style="margin-top:12px">
+<div class="card" style="margin-top:12px">
+
           <div class="space-between">
             <div>
               <h3 style="margin:0">Closing Balance</h3>
             </div>
           </div>
           <div style="margin-top:10px;font-size:28px;font-weight:700" id="statClosing">7,500</div>
+<div style="margin-top:14px;font-size:18px;font-weight:700"><strong>Gross Outstanding Balance : <span id="statGrossOutstanding">0</span></strong></div>
         </div>
       </section>
 
@@ -522,6 +528,7 @@
           <div>
             <h3>Members Contribution</h3>
                       </div>
+          <div class="flex no-print"><button class="btn btn-secondary btn-small" id="downloadContributionBtn">Download</button></div>
         </div>
         <div class="card">
           <form id="contribForm" class="form-grid">
@@ -569,7 +576,7 @@
           </div>
         </div>
       </section>
-
+      
       <section id="cashbook" class="section">
         <div class="section-head">
           <div>
@@ -650,7 +657,11 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js">
+function setupTablePagination(){document.querySelectorAll('.table-wrap table').forEach((table,ti)=>{const tbody=table.tBodies[0];if(!tbody)return;const rows=[...tbody.rows];if(rows.length<=10)return;const pageSize=10;let page=1;let controls=table.parentElement.querySelector('.pagination-controls');if(!controls){controls=document.createElement('div');controls.className='pagination-controls';table.parentElement.appendChild(controls);}function render(){rows.forEach((r,i)=>r.style.display=(i>=(page-1)*pageSize&&i<page*pageSize)?'':'none');controls.innerHTML=`<button class="btn btn-secondary btn-small" ${page===1?'disabled':''}>Prev</button><span>Page ${page} / ${Math.ceil(rows.length/pageSize)}</span><button class="btn btn-secondary btn-small" ${page>=Math.ceil(rows.length/pageSize)?'disabled':''}>Next</button>`;controls.children[0].onclick=()=>{if(page>1){page--;render();}};controls.children[2].onclick=()=>{if(page<Math.ceil(rows.length/pageSize)){page++;render();}};}render();});}
+const _refreshAll=refreshAll;refreshAll=function(){_refreshAll();setTimeout(setupTablePagination,0);};
+document.addEventListener('DOMContentLoaded',()=>{const b=el('downloadContributionBtn');if(b)b.addEventListener('click',()=>downloadAccountPdf('contrib'));setTimeout(setupTablePagination,300);});
+</script>
   <script>
     const STORAGE_KEY = 'micro_finance_state_v3';
     const AUTH_CODE = '6655';
@@ -947,6 +958,14 @@
     function totalOutstandingEmi() {
       return num(state.borrowers.reduce((sum, b) => sum + outstandingAmount(b), 0));
     }
+    
+    function totalReceiptWithOpeningBalance() {
+      return num(state.openingBalance) + totalContribution();
+    }
+    function totalExpenditureAmount() {
+      return totalExpenditure();
+    }
+
     function projectedReturnsAfterClearance() {
       return num(totalReceipts() + totalOutstandingEmi());
     }
@@ -1039,8 +1058,17 @@
       if(interestEl){
         interestEl.textContent = fmt(totalInterestOccurredTillDate());
       }
-      el('statProjected').textContent = fmt(projectedReturnsAfterClearance());
+      const out = el('statOutstandingEmi');
+      if(out) out.textContent = fmt(totalOutstandingEmi());
+      const emi = el('statEmiRecovered');
+      if(emi) emi.textContent = fmt(totalEmiReceipts());
+      const rec = el('statTotalReceipt');
+      if(rec) rec.textContent = fmt(totalReceiptWithOpeningBalance());
+      const exp = el('statTotalExpenditure');
+      if(exp) exp.textContent = fmt(totalExpenditureAmount());
       el('statClosing').textContent = fmt(closingBalance());
+      const gross = el('statGrossOutstanding');
+      if(gross) gross.textContent = fmt(closingBalance() + totalOutstandingEmi());
     }
 
     function renderBorrowerList() {
@@ -1118,7 +1146,7 @@
     }
 
     function renderContribution() {
-      el('contribTable').innerHTML = state.contributions.slice().reverse().map(c => `
+      el('contribTable').innerHTML = state.contributions.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).map(c => `
         <tr>
           <td>${esc(formatDateShort(c.date))}</td>
           <td>${fmt(c.amount)}</td>
@@ -1128,7 +1156,7 @@
     }
 
     function renderExpenditure() {
-      el('expTable').innerHTML = state.expenditures.slice().reverse().map(x => `
+      el('expTable').innerHTML = state.expenditures.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).map(x => `
         <tr>
           <td>${esc(formatDateShort(x.date))}</td>
           <td>${esc(x.particulars)}</td>
@@ -1617,18 +1645,54 @@
       pdfFooter(doc, 282);
       savePdfBlob(doc, type === 'contrib' ? 'Members_Contribution.pdf' : 'Members_Expenditure.pdf');
     }
+        
+    
+    function downloadAccountPdf(type) {
+      const JsPDF = window.jspdf.jsPDF;
+      const doc = new JsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+      const isContribution = type === 'contrib';
+      drawPdfHeader(doc, isContribution ? 'Members Contribution' : 'Members Expenditure');
+      let y = 50;
+      const rows = isContribution ? state.contributions.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)) : state.expenditures.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+      doc.setFont('times','bold');
+      const headers = isContribution ? ['Date','Amount','Notes'] : ['Date','Particulars','Amount'];
+      headers.forEach((h,i)=>doc.text(h,[15,70,140][i],y));
+      y += 6;
+      doc.line(12,y,198,y);
+      y += 8;
+      doc.setFont('times','normal');
+      let total = 0;
+      rows.forEach(r=>{
+        if(y > 270){ pdfFooter(doc,282); doc.addPage(); drawPdfHeader(doc, isContribution ? 'Members Contribution' : 'Members Expenditure'); y = 40; }
+        doc.text(formatDateShort(r.date),15,y);
+        if(isContribution){
+          doc.text(fmt(r.amount),70,y);
+          doc.text(String(r.notes||'').slice(0,40),140,y);
+        }else{
+          doc.text(String(r.particulars||'').slice(0,45),70,y);
+          doc.text(fmt(r.amount),170,y,{align:'right'});
+        }
+        total += num(r.amount);
+        y += 8;
+      });
+      y += 4;
+      doc.setFont('times','bold');
+      doc.text('Grand Total: ' + fmt(total),15,y);
+      pdfFooter(doc,282);
+      savePdfBlob(doc, (isContribution ? 'Members_Contribution_' : 'Members_Expenditure_') + todayISO() + '.pdf');
+    }
 
     function downloadCashbookPdf() {
       const JsPDF = window.jspdf.jsPDF;
       const doc = new JsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
       drawPdfHeader(doc, 'Cashbook Register');
-      let y = 48;
+      let y = 40;
       doc.setFont('times', 'bold');
       doc.text('Date', 12, y);
       doc.text('Particulars', 48, y);
       doc.text('Receipts', 170, y);
       doc.text('Payments', 220, y);
-      doc.text('Balance', 270, y);
+      doc.text('Balance', 258, y);
       y += 4;
       doc.line(12, y, 285, y);
       y += 7;
@@ -1639,13 +1703,13 @@
           pdfFooter(doc, 196);
           doc.addPage();
           drawPdfHeader(doc, 'Cashbook Register');
-          y = 22;
+          y = 40;
           doc.setFont('times', 'bold');
           doc.text('Date', 12, y);
           doc.text('Particulars', 48, y);
           doc.text('Receipts', 170, y);
           doc.text('Payments', 220, y);
-          doc.text('Balance', 270, y);
+          doc.text('Balance', 258, y);
           y += 4;
           doc.line(12, y, 285, y);
           y += 7;
@@ -1975,7 +2039,12 @@
         toast('App loaded with local data');
       }
     })();
-  </script>
+  
+function setupTablePagination(){document.querySelectorAll('.table-wrap table').forEach((table,ti)=>{const tbody=table.tBodies[0];if(!tbody)return;const rows=[...tbody.rows];if(rows.length<=10)return;const pageSize=10;let page=1;let controls=table.parentElement.querySelector('.pagination-controls');if(!controls){controls=document.createElement('div');controls.className='pagination-controls';table.parentElement.appendChild(controls);}function render(){rows.forEach((r,i)=>r.style.display=(i>=(page-1)*pageSize&&i<page*pageSize)?'':'none');controls.innerHTML=`<button class="btn btn-secondary btn-small" ${page===1?'disabled':''}>Prev</button><span>Page ${page} / ${Math.ceil(rows.length/pageSize)}</span><button class="btn btn-secondary btn-small" ${page>=Math.ceil(rows.length/pageSize)?'disabled':''}>Next</button>`;controls.children[0].onclick=()=>{if(page>1){page--;render();}};controls.children[2].onclick=()=>{if(page<Math.ceil(rows.length/pageSize)){page++;render();}};}render();});}
+const _refreshAll=refreshAll;refreshAll=function(){_refreshAll();setTimeout(setupTablePagination,0);};
+document.addEventListener('DOMContentLoaded',()=>{const b=el('downloadContributionBtn');if(b)b.addEventListener('click',()=>downloadAccountPdf('contrib'));setTimeout(setupTablePagination,300);});
+</script>
 
 
 </body></html>
+
